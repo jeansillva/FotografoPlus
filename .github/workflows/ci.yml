@@ -22,9 +22,18 @@ jobs:
     - name: Instalar dependências do backend
       run: |
         cd backend
-        if [ -f package.json ]; then npm install; else echo "Sem backend implementado"; fi
+        if [ -f package.json ]; then
+          npm install
+        else
+          echo "Sem backend implementado"
+        fi
 
     - name: Instalar dependências do frontend
       run: |
         cd frontend
-        if [ -f package.json ]; then npm install; else echo "Sem frontend implementado"; fi
+        if [ -f package.json ]; then
+          npm install
+          npm run build --if-present
+        else
+          echo "Sem frontend implementado"
+        fi
