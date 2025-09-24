@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
@@ -37,3 +37,8 @@ jobs:
         else
           echo "Sem frontend implementado"
         fi
+
+    - name: Deploy para Vercel
+      run: |
+        npm install -g vercel
+        vercel --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
