@@ -1,0 +1,50 @@
+@import url(../styles/variables.css);
+
+.navbarCustom {
+  background-color: var(--color-primary);
+}
+
+.brand {
+  color: var(--color-secondary) !important;
+  font-size: 1.3rem;
+}
+
+.navList {
+  text-align: right;
+}
+
+.navLink {
+  color: var(--color-secondary) !important;
+  margin-left: 1rem;
+  padding: 0.7rem 1rem;
+  transition: all 0.3s ease;
+  display: block;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.navLink:last-child {
+  border-bottom: none;
+}
+
+.navLink:hover {
+  background-color: rgba(255, 215, 0, 0.2);
+  color: #ffffff !important;
+}
+
+@media (max-width: 992px) {
+  .navList {
+    width: 100%; 
+  }
+
+  .navLink {
+    margin-left: 0;
+    text-align: center; 
+    width: 100%;
+    border-bottom: 1px solid rgba(255, 215, 0, 0.6); 
+  }
+
+  .navLink:hover {
+    background-color: rgba(255, 215, 0, 0.15);
+    color: #fff !important;
+  }
+}
