@@ -1,15 +1,15 @@
 import express from "express";
 import {
-  getSchedules,
-  addSchedule,
+  createSchedule,
+  getAllSchedules,
   updateSchedule,
   deleteSchedule,
 } from "../controllers/scheduleController.js";
 
 const router = express.Router();
 
-router.get("/", getSchedules);
-router.post("/", addSchedule);
+router.post("/", createSchedule);
+router.get("/", getAllSchedules);
 router.put("/:id", updateSchedule);
 router.delete("/:id", deleteSchedule);
 

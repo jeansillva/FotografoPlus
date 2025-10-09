@@ -1,35 +1,61 @@
-const users = [
-  { id: 1, email: "professor@fotografo.com", password: "123456" }
-];
+import jwt from "jsonwebtoken";
+import User from "../models/User.js";
 
-export const login = (req, res) => {
-  const { email, password } = req.body;
-
-  const user = users.find(u => u.email === email && u.password === password);
-
-  if (!user) {
-    return res.status(401).json({ message: "Credenciais inválidas" });
-  }
-
-  res.json({
-    message: "Login bem-sucedido",
-    user: { id: user.id, email: user.email }
+const generateToken = (userId) => {
+  return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN || "7d",
   });
 };
 
-export const register = (req, res) => {
-  const { email, password } = req.body;
+export const registerUser = async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
 
-  const exists = users.some(u => u.email === email);
-  if (exists) {
-    return res.status(400).json({ message: "Usuário já cadastrado" });
+    if (!name || !email || !password)
+      return res.status(400).json({ message: "Preencha todos os campos." });
+
+    const userExists = await User.findOne({ email });
+    if (userExists)
+      return res.status(400).json({ message: "Usuário já cadastrado." });
+
+    const user = await User.create({ name, email, password });
+
+    return res.status(201).json({
+      message: "Usuário registrado com sucesso!",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+      token: generateToken(user._id),
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Erro ao registrar usuário.", error: error.message });
   }
+};
 
-  const newUser = { id: Date.now(), email, password };
-  users.push(newUser);
+export const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
-  res.status(201).json({
-    message: "Usuário registrado com sucesso",
-    user: { id: newUser.id, email: newUser.email }
-  });
+    const user = await User.findOne({ email });
+    if (!user)
+      return res.status(400).json({ message: "Usuário não encontrado." });
+
+    const isMatch = await user.matchPassword(password);
+    if (!isMatch)
+      return res.status(401).json({ message: "Senha incorreta." });
+
+    return res.status(200).json({
+      message: "Login bem-sucedido!",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+      token: generateToken(user._id),
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Erro ao fazer login.", error: error.message });
+  }
 };

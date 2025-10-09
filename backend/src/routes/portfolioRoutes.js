@@ -1,16 +1,16 @@
 import express from "express";
 import {
-  getPhotos,
-  addPhoto,
-  updatePhoto,
-  deletePhoto,
+  createPortfolioItem,
+  getAllPortfolioItems,
+  updatePortfolioItem,
+  deletePortfolioItem,
 } from "../controllers/portfolioController.js";
 
 const router = express.Router();
 
-router.get("/", getPhotos);
-router.post("/", addPhoto);
-router.put("/:id", updatePhoto);
-router.delete("/:id", deletePhoto);
+router.post("/", createPortfolioItem);
+router.get("/", getAllPortfolioItems);
+router.put("/:id", updatePortfolioItem);
+router.delete("/:id", deletePortfolioItem);
 
 export default router;

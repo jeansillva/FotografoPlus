@@ -1,22 +1,21 @@
 import jwt from "jsonwebtoken";
 
 export const authMiddleware = (req, res, next) => {
-  if (process.env.DEV_NO_AUTH === "true" || process.env.DEV_NO_AUTH === undefined) {
-    return next();
-  }
-
-  const auth = req.headers.authorization || "";
-  const token = auth.startsWith("Bearer ") ? auth.substring(7) : null;
+  const token = req.header("Authorization")?.replace("Bearer ", "");
 
   if (!token) {
-    return res.status(401).json({ message: "Token ausente" });
+    return res
+      .status(401)
+      .json({ message: "Acesso negado. Token não fornecido." });
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || "dev-secret");
-    req.user = decoded; 
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
     next();
-  } catch (err) {
-    return res.status(401).json({ message: "Token inválido" });
+  } catch (error) {
+    return res
+      .status(401)
+      .json({ message: "Token inválido ou expirado.", error: error.message });
   }
 };
