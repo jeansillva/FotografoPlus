@@ -3,6 +3,8 @@ import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import styles from "./Portfolio.module.css";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
 export default function Portfolio() {
   const { token } = useContext(AuthContext);
   const [fotos, setFotos] = useState([]);
@@ -13,7 +15,7 @@ export default function Portfolio() {
   useEffect(() => {
     const fetchFotos = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/api/portfolio", {
+        const res = await axios.get(`${API_URL}/api/portfolio`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setFotos(res.data);
@@ -37,7 +39,7 @@ export default function Portfolio() {
     formData.append("description", "Sem descrição inicial");
 
     try {
-      const res = await axios.post("http://localhost:3000/api/portfolio", formData, {
+      const res = await axios.post(`${API_URL}/api/portfolio`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
@@ -52,11 +54,9 @@ export default function Portfolio() {
 
   const handleUpdateField = async (id, dataAtualizada) => {
     try {
-      await axios.put(
-        `http://localhost:3000/api/portfolio/${id}`,
-        dataAtualizada,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await axios.put(`${API_URL}/api/portfolio/${id}`, dataAtualizada, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       setFotos((prev) =>
         prev.map((foto) => (foto._id === id ? { ...foto, ...dataAtualizada } : foto))
@@ -71,7 +71,7 @@ export default function Portfolio() {
     if (!window.confirm("Tem certeza que deseja excluir esta foto?")) return;
 
     try {
-      await axios.delete(`http://localhost:3000/api/portfolio/${id}`, {
+      await axios.delete(`${API_URL}/api/portfolio/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setFotos((prevFotos) => prevFotos.filter((foto) => foto._id !== id));

@@ -4,6 +4,8 @@ import { AuthContext } from "../context/AuthContext";
 import axios from "axios";
 import styles from "./Login.module.css";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
 export default function Login() {
   const location = useLocation();
   const [message, setMessage] = useState("");
@@ -21,7 +23,7 @@ export default function Login() {
     const password = e.target.password.value;
 
     try {
-      const res = await axios.post("http://localhost:3000/api/auth/login", {
+      const res = await axios.post(`${API_URL}/api/auth/login`, {
         email,
         password,
       });
@@ -39,20 +41,8 @@ export default function Login() {
         <h2>Login</h2>
         {message && <p className={styles.alert}>{message}</p>}
         <form onSubmit={handleLogin}>
-          <input
-            name="email"
-            type="email"
-            placeholder="Email"
-            className={styles.input}
-            required
-          />
-          <input
-            name="password"
-            type="password"
-            placeholder="Senha"
-            className={styles.input}
-            required
-          />
+          <input name="email" type="email" placeholder="Email" className={styles.input} required />
+          <input name="password" type="password" placeholder="Senha" className={styles.input} required />
           <button type="submit" className={styles.loginButton}>
             Entrar
           </button>
