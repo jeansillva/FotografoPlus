@@ -4,7 +4,7 @@ import { AuthContext } from "../context/AuthContext";
 import axios from "axios";
 import styles from "./Login.module.css";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const API_URL = "https://fotografoplus.onrender.com";
 
 export default function Login() {
   const location = useLocation();

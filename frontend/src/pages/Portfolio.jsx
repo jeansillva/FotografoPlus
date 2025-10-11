@@ -3,7 +3,7 @@ import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import styles from "./Portfolio.module.css";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const API_URL = "https://fotografoplus.onrender.com";
 
 export default function Portfolio() {
   const { token } = useContext(AuthContext);
