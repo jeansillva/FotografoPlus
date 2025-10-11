@@ -2,7 +2,7 @@
 
 .portfolioPage {
   min-height: 100vh;
-  background-image: url("../assets/images/portfolio-bg.jpg"); 
+  background-image: url("../assets/images/portfolio-bg.jpg");
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -24,9 +24,13 @@
 .card {
   cursor: pointer;
   border: none;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  overflow: hidden;
   border-radius: 10px;
+  overflow: hidden;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card:hover {
@@ -35,7 +39,8 @@
 }
 
 .cardImg {
-  height: 220px;
+  height: 200px;
+  width: 100%;
   object-fit: cover;
   transition: transform 0.4s ease;
 }
@@ -44,20 +49,93 @@
   transform: scale(1.1);
 }
 
+.card-body {
+  background: #fff;
+  padding: 0.8rem;
+  text-align: center;
+  flex-grow: 1;
+}
+
 .card-body p {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: #333;
-  cursor: pointer;
 }
 
-.modal-content {
-  background: #000;
-  border-radius: 10px;
+.modalFixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+}
+
+.modalBox {
+  background: #1a1a1a;
+  border-radius: 12px;
+  border: 1px solid #444;
+  width: 90%;
+  max-width: 750px;
+  height: 80vh;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
 }
 
-.modal-content img {
-  max-height: 70vh;
+.modalTitle {
+  color: #ffc107;
+  font-weight: bold;
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.modalImage {
+  width: 100%;
+  max-width: 500px;
+  height: 300px;
   object-fit: contain;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  flex-shrink: 0;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: auto;
+  border-radius: 0 0 12px 12px;
+}
+
+.form-control {
+  background: #222;
+  color: #fff;
+  border: 1px solid #555;
+}
+
+.form-control:focus {
+  border-color: #ffc107;
+  box-shadow: 0 0 6px rgba(255, 193, 7, 0.5);
+  background: #1a1a1a;
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  .modalBox {
+    height: 85vh;
+    padding: 1.5rem;
+  }
+
+  .modalImage {
+    height: 220px;
+  }
 }

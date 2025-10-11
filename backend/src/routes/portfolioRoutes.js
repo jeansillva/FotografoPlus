@@ -4,11 +4,12 @@ import {
   getAllPortfolioItems,
   updatePortfolioItem,
   deletePortfolioItem,
+  upload, 
 } from "../controllers/portfolioController.js";
 
 const router = express.Router();
 
-router.post("/", createPortfolioItem);
+router.post("/", upload.single("image"), createPortfolioItem);
 router.get("/", getAllPortfolioItems);
 router.put("/:id", updatePortfolioItem);
 router.delete("/:id", deletePortfolioItem);
