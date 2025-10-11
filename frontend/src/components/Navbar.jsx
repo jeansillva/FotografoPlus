@@ -1,13 +1,25 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "./Navbar.module.css";
 import { Collapse } from "bootstrap";
+import { AuthContext } from "../context/AuthContext";
 
 export default function Navbar() {
+  const { token, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
   const handleLinkClick = () => {
     const navbar = document.getElementById("navbarNav");
-    const bsCollapse = new Collapse(navbar, { toggle: false });
-    bsCollapse.hide();
+    if (navbar) {
+      const bsCollapse = new Collapse(navbar, { toggle: false });
+      bsCollapse.hide();
+    }
+  };
+
+  const handleLogout = () => {
+    logout();
+    handleLinkClick();
+    navigate("/login");
   };
 
   return (
@@ -32,20 +44,45 @@ export default function Navbar() {
         <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
           <ul className={`navbar-nav ${styles.navList}`}>
             <li className="nav-item">
-              <Link className={`nav-link ${styles.navLink}`} to="/portfolio" onClick={handleLinkClick}>
+              <Link
+                className={`nav-link ${styles.navLink}`}
+                to="/portfolio"
+                onClick={handleLinkClick}
+              >
                 Portfólio
               </Link>
             </li>
             <li className="nav-item">
-              <Link className={`nav-link ${styles.navLink}`} to="/schedule" onClick={handleLinkClick}>
+              <Link
+                className={`nav-link ${styles.navLink}`}
+                to="/schedule"
+                onClick={handleLinkClick}
+              >
                 Agenda
               </Link>
             </li>
-            <li className="nav-item">
-              <Link className={`nav-link ${styles.navLink}`} to="/login" onClick={handleLinkClick}>
-                Login
-              </Link>
-            </li>
+
+            {!token ? (
+              <li className="nav-item">
+                <Link
+                  className={`nav-link ${styles.navLink}`}
+                  to="/login"
+                  onClick={handleLinkClick}
+                >
+                  Login
+                </Link>
+              </li>
+            ) : (
+              <li className="nav-item">
+                <button
+                  type="button"
+                  className={`nav-link ${styles.logoutLink}`}
+                  onClick={handleLogout}
+                >
+                  Sair
+                </button>
+              </li>
+            )}
           </ul>
         </div>
       </div>

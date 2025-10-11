@@ -21,62 +21,68 @@
 }
 
 .loginBox {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 10px;
-  padding: 2rem 2.5rem;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  border-radius: 15px;
+  padding: 2.5rem 2rem;
   width: 100%;
-  max-width: 400px;
-  z-index: 1;
+  max-width: 420px;
   text-align: center;
-  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  z-index: 1;
 }
 
 .loginBox h2 {
   color: var(--color-secondary);
   font-weight: 700;
+  margin-bottom: 1.2rem;
 }
 
-.input {
-  background: rgba(255, 255, 255, 0.85);
-  border: none;
-  padding: 0.8rem;
-  border-radius: 5px;
+.alert {
+  background: rgba(255, 255, 255, 0.2);
+  color: #f0f0f0;
   font-size: 0.95rem;
+  border-radius: 8px;
+  padding: 0.8rem;
+  margin-bottom: 1.2rem;
 }
 
-.input:focus {
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+form input {
+  width: 80%;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  padding: 0.9rem 1rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: box-shadow 0.3s ease;
+}
+
+form input:focus {
   outline: none;
-  box-shadow: 0 0 5px var(--color-secondary);
+  box-shadow: 0 0 8px var(--color-secondary);
 }
 
-.loginButton {
+form button {
+  width: 80%;
   background: var(--color-primary);
   color: var(--color-secondary);
   border: none;
-  padding: 0.8rem;
-  width: 100%;
-  border-radius: 5px;
-  font-weight: bold;
+  padding: 0.9rem;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.loginButton:hover {
+form button:hover {
   background: var(--color-secondary);
   color: #000;
-}
-
-.registerArea {
-  margin-top: 1rem;
-  color: #fff;
-}
-
-.registerLink {
-  color: var(--color-secondary);
-  font-weight: bold;
-  text-decoration: none;
-}
-
-.registerLink:hover {
-  text-decoration: underline;
 }
