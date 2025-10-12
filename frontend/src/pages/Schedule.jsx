@@ -1,65 +1,122 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import axios from "axios";
+import { AuthContext } from "../context/AuthContext";
 import styles from "./Schedule.module.css";
 
+const API_URL = import.meta.env.VITE_API_URL
+
 export default function Schedule() {
-  const [agendamentos, setAgendamentos] = useState([
-    { id: 1, data: "25/09/2025", titulo: "Ensaio Fotográfico" },
-    { id: 2, data: "28/09/2025", titulo: "Casamento" },
-  ]);
+  const { token } = useContext(AuthContext);
+  const [agendamentos, setAgendamentos] = useState([]);
+  const [novoAgendamento, setNovoAgendamento] = useState({ date: "", title: "", description: "" });
+  const [editando, setEditando] = useState(null);
+  const [mensagem, setMensagem] = useState("");
+  const [modalAberto, setModalAberto] = useState(false);
 
-  const [novoAgendamento, setNovoAgendamento] = useState({
-    data: "",
-    titulo: "",
-  });
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      try {
+        const res = await axios.get(`${API_URL}/api/schedules`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setAgendamentos(res.data);
+      } catch (error) {
+        console.error("Erro ao carregar agendamentos:", error);
+        setMensagem("Erro ao carregar agendamentos.");
+      }
+    };
+    fetchSchedules();
+  }, [token]);
 
-  const handleDelete = (id) => {
-    setAgendamentos(agendamentos.filter((item) => item.id !== id));
+  const handleSave = async () => {
+    if (!novoAgendamento.date || !novoAgendamento.title) return;
+
+    try {
+      if (editando) {
+        const res = await axios.put(
+          `${API_URL}/api/schedules/${editando._id}`,
+          novoAgendamento,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setAgendamentos((prev) =>
+          prev.map((item) => (item._id === editando._id ? res.data.updated : item))
+        );
+      } else {
+        const res = await axios.post(`${API_URL}/api/schedules`, novoAgendamento, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setAgendamentos([...agendamentos, res.data.newSchedule]);
+      }
+
+      setNovoAgendamento({ date: "", title: "", description: "" });
+      setEditando(null);
+      setModalAberto(false);
+    } catch (error) {
+      console.error("Erro ao salvar agendamento:", error);
+      setMensagem("Erro ao salvar agendamento.");
+    }
   };
 
-  const handleAdd = () => {
-    if (!novoAgendamento.data || !novoAgendamento.titulo) return;
-
-    const novo = {
-      id: Date.now(),
-      data: novoAgendamento.data,
-      titulo: novoAgendamento.titulo,
-    };
-
-    setAgendamentos([...agendamentos, novo]);
-    setNovoAgendamento({ data: "", titulo: "" });
-    window.bootstrap.Modal.getInstance(
-      document.getElementById("addModal")
-    ).hide();
+  const handleDelete = async (id) => {
+    if (!window.confirm("Tem certeza que deseja excluir este agendamento?")) return;
+    try {
+      await axios.delete(`${API_URL}/api/schedules/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setAgendamentos((prev) => prev.filter((item) => item._id !== id));
+    } catch (error) {
+      console.error("Erro ao excluir agendamento:", error);
+      setMensagem("Erro ao excluir agendamento.");
+    }
   };
 
   return (
     <div className={styles.schedulePage}>
       <div className={styles.scheduleContainer}>
-        {/* Header */}
         <div className={styles.scheduleHeader}>
           <h2>Agenda</h2>
           <button
             className={styles.addButton}
-            data-bs-toggle="modal"
-            data-bs-target="#addModal"
+            onClick={() => {
+              setEditando(null);
+              setNovoAgendamento({ date: "", title: "", description: "" });
+              setModalAberto(true);
+            }}
           >
             + Novo Agendamento
           </button>
         </div>
 
-        {/* Lista de Agendamentos */}
+        {mensagem && <p className="text-danger">{mensagem}</p>}
+
         <div className={styles.scheduleList}>
           {agendamentos.map((item) => (
-            <div key={item.id} className={styles.scheduleItem}>
+            <div key={item._id} className={styles.scheduleItem}>
               <div className={styles.eventInfo}>
-                <span className={styles.scheduleDate}>📅 {item.data} </span>
-                <span>{item.titulo}</span>
+                <span className={styles.scheduleDate}>
+                  📅 {new Date(item.date).toLocaleDateString("pt-BR")}
+                </span>
+                <span className="fw-bold"> {item.title}</span>
+                {item.description && <p>{item.description}</p>}
               </div>
               <div className={styles.scheduleActions}>
-                <button className={`${styles.editButton}`}>Editar</button>
                 <button
-                  className={`${styles.deleteButton}`}
-                  onClick={() => handleDelete(item.id)}
+                  className={styles.editButton}
+                  onClick={() => {
+                    setEditando(item);
+                    setNovoAgendamento({
+                      date: item.date.split("T")[0],
+                      title: item.title,
+                      description: item.description || "",
+                    });
+                    setModalAberto(true);
+                  }}
+                >
+                  Editar
+                </button>
+                <button
+                  className={styles.deleteButton}
+                  onClick={() => handleDelete(item._id)}
                 >
                   Excluir
                 </button>
@@ -69,77 +126,47 @@ export default function Schedule() {
         </div>
       </div>
 
-      {/* Novo Agendamento */}
-      <div
-        className="modal fade"
-        id="addModal"
-        tabIndex="-1"
-        aria-labelledby="addModalLabel"
-        aria-hidden="true"
-      >
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title fw-bold" id="addModalLabel">
-                Novo Agendamento
-              </h5>
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Fechar"
-              ></button>
-            </div>
-            <div className="modal-body">
-              <div className="mb-3">
-                <label className="form-label">Data</label>
-                <input
-                  type="date"
-                  className="form-control"
-                  value={novoAgendamento.data}
-                  onChange={(e) =>
-                    setNovoAgendamento({
-                      ...novoAgendamento,
-                      data: e.target.value,
-                    })
-                  }
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Título</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Ex: Ensaio Fotográfico"
-                  value={novoAgendamento.titulo}
-                  onChange={(e) =>
-                    setNovoAgendamento({
-                      ...novoAgendamento,
-                      titulo: e.target.value,
-                    })
-                  }
-                />
-              </div>
-            </div>
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                data-bs-dismiss="modal"
-              >
+      {modalAberto && (
+        <div className={styles.modalOverlay} onClick={() => setModalAberto(false)}>
+          <div className={styles.modalBox} onClick={(e) => e.stopPropagation()}>
+            <h3 className={styles.modalTitle}>
+              {editando ? "Editar Agendamento" : "Novo Agendamento"}
+            </h3>
+
+            <label>Data</label>
+            <input
+              type="date"
+              value={novoAgendamento.date}
+              onChange={(e) => setNovoAgendamento({ ...novoAgendamento, date: e.target.value })}
+            />
+
+            <label>Título</label>
+            <input
+              type="text"
+              value={novoAgendamento.title}
+              onChange={(e) => setNovoAgendamento({ ...novoAgendamento, title: e.target.value })}
+            />
+
+            <label>Descrição</label>
+            <textarea
+              rows="3"
+              value={novoAgendamento.description}
+              onChange={(e) =>
+                setNovoAgendamento({ ...novoAgendamento, description: e.target.value })
+              }
+            ></textarea>
+
+            <div className={styles.modalActions}>
+              <button className={styles.cancelButton} onClick={() => setModalAberto(false)}>
                 Cancelar
               </button>
-              <button
-                type="button"
-                className="btn btn-warning fw-bold"
-                onClick={handleAdd}
-              >
-                Salvar
+              <button className={styles.saveButton} onClick={handleSave}>
+                {editando ? "Salvar Alterações" : "Salvar"}
               </button>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

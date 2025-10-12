@@ -5,12 +5,13 @@ import {
   updateSchedule,
   deleteSchedule,
 } from "../controllers/scheduleController.js";
+import { authMiddleware } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/", createSchedule);
-router.get("/", getAllSchedules);
-router.put("/:id", updateSchedule);
-router.delete("/:id", deleteSchedule);
+router.post("/", authMiddleware, createSchedule);
+router.get("/", authMiddleware, getAllSchedules);
+router.put("/:id", authMiddleware, updateSchedule);
+router.delete("/:id", authMiddleware, deleteSchedule);
 
 export default router;
