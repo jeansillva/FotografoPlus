@@ -13,7 +13,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read # Required for actions/checkout
 
     steps:
       - uses: actions/checkout@v4
@@ -22,8 +22,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
 
       - name: npm install, build, and test
+        working-directory: ./backend
         run: |
           npm install
           npm run build --if-present
@@ -33,27 +36,27 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: .
+          path: backend
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
+      id-token: write # Required for requesting the JWT
+      contents: read # Required for actions/checkout
 
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
           name: node-app
-      
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_5270860E21284710961DC11C0A65A1F8 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_106A71BE23574450881604223451CCCF }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_6E86A07167384B2DB2D96710D965054E }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_DC8DAAC893DF4EDDA79F302642708EBE }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_5BA6FE29F4594DAB869BB4774ED85CDB }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_57ADAB14D5EA478B9F06E86F2E8139B4 }}
 
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
@@ -62,4 +65,3 @@ jobs:
           app-name: 'fotografoplus'
           slot-name: 'Production'
           package: .
-          
