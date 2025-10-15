@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import styles from "./Portfolio.module.css";
+import LoadingIndicator from "../components/LoadingIndicator";
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -82,7 +83,11 @@ export default function Portfolio() {
     }
   };
 
-  if (loading) return <p className="text-center mt-5 text-light">Carregando...</p>;
+  if (loading) return (
+    <div className={styles.portfolioPage}>
+      <LoadingIndicator size="large" />
+    </div>
+  );
 
   return (
     <div className={styles.portfolioPage}>

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./Navbar.module.css";
 import { Collapse } from "bootstrap";
@@ -7,12 +7,27 @@ import { AuthContext } from "../context/AuthContext";
 export default function Navbar() {
   const { token, logout } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const navbarRef = useRef(null);
 
   const handleLinkClick = () => {
-    const navbar = document.getElementById("navbarNav");
-    if (navbar) {
-      const bsCollapse = new Collapse(navbar, { toggle: false });
+    if (navbarRef.current && window.innerWidth < 992) {
+      const bsCollapse = Collapse.getOrCreateInstance(navbarRef.current, { toggle: false });
       bsCollapse.hide();
+      setMenuOpen(false);
+    }
+  };
+
+  const handleTogglerClick = () => {
+    if (navbarRef.current && window.innerWidth < 992) {
+      const bsCollapse = Collapse.getOrCreateInstance(navbarRef.current, { toggle: false });
+      if (menuOpen) {
+        bsCollapse.hide();
+        setMenuOpen(false);
+      } else {
+        bsCollapse.show();
+        setMenuOpen(true);
+      }
     }
   };
 
@@ -32,16 +47,19 @@ export default function Navbar() {
         <button
           className="navbar-toggler bg-light"
           type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
           aria-controls="navbarNav"
-          aria-expanded="false"
+          aria-expanded={menuOpen}
           aria-label="Toggle navigation"
+          onClick={handleTogglerClick}
         >
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <div
+          className="collapse navbar-collapse justify-content-end"
+          id="navbarNav"
+          ref={navbarRef}
+        >
           <ul className={`navbar-nav ${styles.navList}`}>
             <li className="nav-item">
               <Link

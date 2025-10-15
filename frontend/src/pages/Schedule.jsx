@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import styles from "./Schedule.module.css";
+import LoadingIndicator from "../components/LoadingIndicator";
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -12,6 +13,7 @@ export default function Schedule() {
   const [editando, setEditando] = useState(null);
   const [mensagem, setMensagem] = useState("");
   const [modalAberto, setModalAberto] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchSchedules = async () => {
@@ -23,6 +25,8 @@ export default function Schedule() {
       } catch (error) {
         console.error("Erro ao carregar agendamentos:", error);
         setMensagem("Erro ao carregar agendamentos.");
+      } finally {
+        setLoading(false);
       }
     };
     fetchSchedules();
@@ -69,6 +73,12 @@ export default function Schedule() {
       setMensagem("Erro ao excluir agendamento.");
     }
   };
+
+  if (loading) return (
+    <div className={styles.schedulePage}>
+      <LoadingIndicator size="large" />
+    </div>
+  );
 
   return (
     <div className={styles.schedulePage}>
