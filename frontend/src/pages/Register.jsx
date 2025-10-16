@@ -1,5 +1,4 @@
-import { useLocation, Link } from "react-router-dom";
-import { useEffect, useState, useContext } from "react";
+import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import axios from "axios";
 import styles from "./Login.module.css";
@@ -8,26 +7,21 @@ import { useLoading } from "../hooks/useLoading";
 
 const API_URL = import.meta.env.VITE_API_URL
 
-export default function Login() {
-  const location = useLocation();
+export default function Register() {
   const [message, setMessage] = useState("");
   const { login } = useContext(AuthContext);
   const { loading, startLoading, stopLoading } = useLoading();
 
-  useEffect(() => {
-    if (location.state?.from === "private") {
-      setMessage("É necessário fazer login para acessar essa página.");
-    }
-  }, [location.state]);
-
-  const handleLogin = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
+    const name = e.target.name.value;
     const email = e.target.email.value;
     const password = e.target.password.value;
 
     startLoading();
     try {
-      const res = await axios.post(`${API_URL}/api/auth/login`, {
+      const res = await axios.post(`${API_URL}/api/auth/register`, {
+        name,
         email,
         password,
       });
@@ -35,7 +29,7 @@ export default function Login() {
       login(res.data.user, res.data.token);
       window.location.href = "/portfolio";
     } catch (err) {
-      setMessage("Email ou senha incorretos.");
+      setMessage("Erro ao registrar. Tente novamente.");
     } finally {
       stopLoading();
     }
@@ -44,28 +38,16 @@ export default function Login() {
   return (
     <div className={styles.loginPage}>
       <div className={styles.loginBox}>
-        <h2>Login</h2>
+        <h2>Cadastro</h2>
         {message && <p className={styles.alert}>{message}</p>}
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleRegister}>
+          <input name="name" type="text" placeholder="Nome" className={styles.input} required />
           <input name="email" type="email" placeholder="Email" className={styles.input} required />
           <input name="password" type="password" placeholder="Senha" className={styles.input} required />
           <button type="submit" className={styles.loginButton} disabled={loading}>
-            {loading ? <LoadingIndicator /> : "Entrar"}
+            {loading ? <LoadingIndicator /> : "Cadastrar"}
           </button>
         </form>
-        <p style={{ marginTop: "1.5rem", color: "#fff" }}>
-          Não tem conta?{" "}
-          <Link
-            to="/register"
-            style={{
-              color: "#f39c12",
-              fontWeight: "bold",
-              textDecoration: "underline",
-            }}
-          >
-            Registre-se
-          </Link>
-        </p>
       </div>
     </div>
   );

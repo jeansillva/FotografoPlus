@@ -34,6 +34,42 @@ export const registerUser = async (req, res) => {
   }
 };
 
+export const updateUserCredentials = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { name, currentPassword, newPassword } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "Usuário não encontrado." });
+
+    if (name) user.name = name;
+
+    if (currentPassword || newPassword) {
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json({ message: "Preencha todos os campos de senha." });
+      }
+      const isMatch = await user.matchPassword(currentPassword);
+      if (!isMatch) {
+        return res.status(400).json({ message: "Senha atual incorreta." });
+      }
+      user.password = newPassword;
+    }
+
+    await user.save();
+
+    res.status(200).json({
+      message: "Credenciais atualizadas com sucesso!",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Erro ao atualizar credenciais.", error: error.message });
+  }
+};
+
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;

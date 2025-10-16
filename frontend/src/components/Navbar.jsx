@@ -79,7 +79,6 @@ export default function Navbar() {
                 Agenda
               </Link>
             </li>
-
             {!token ? (
               <li className="nav-item">
                 <Link
@@ -91,15 +90,26 @@ export default function Navbar() {
                 </Link>
               </li>
             ) : (
-              <li className="nav-item">
-                <button
-                  type="button"
-                  className={`nav-link ${styles.logoutLink}`}
-                  onClick={handleLogout}
-                >
-                  Sair
-                </button>
-              </li>
+              <>
+                <li className="nav-item">
+                  <Link
+                    className={`nav-link ${styles.navLink}`}
+                    to="/update-credentials"
+                    onClick={handleLinkClick}
+                  >
+                    Alterar Dados
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <button
+                    type="button"
+                    className={`nav-link ${styles.logoutLink}`}
+                    onClick={handleLogout}
+                  >
+                    Sair
+                  </button>
+                </li>
+              </>
             )}
           </ul>
         </div>
