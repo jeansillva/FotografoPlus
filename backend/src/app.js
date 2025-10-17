@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import morgan from "morgan";
 
 import authRoutes from "./routes/authRoutes.js";
 import scheduleRoutes from "./routes/scheduleRoutes.js";
@@ -14,6 +15,8 @@ app.use(cors());
 app.use(express.json({ limit: "15mb" }));
 app.use(express.urlencoded({ extended: true, limit: "15mb" }));
 
+const morganFormat = process.env.NODE_ENV === "production" ? "combined" : "dev";
+app.use(morgan(morganFormat));
 
 app.use("/api/auth", authRoutes);
 
@@ -25,5 +28,13 @@ app.get("/", (req, res) => {
 });
 
 app.use(errorHandler);
+
+process.on("uncaughtException", (err) => {
+  console.error(`uncaughtException: ${err.stack || err}`);
+  process.exit(1);
+});
+process.on("unhandledRejection", (reason) => {
+  console.error(`unhandledRejection: ${reason}`);
+});
 
 export default app;

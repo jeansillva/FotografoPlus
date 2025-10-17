@@ -9,36 +9,74 @@ export const createPortfolioItem = async (req, res) => {
     const { title, description } = req.body;
     const userId = req.user?.id;
 
-    if (!req.file) {
+    if (!req.file || !req.file.buffer) {
       return res.status(400).json({ message: "Imagem é obrigatória" });
     }
 
-    const imageBase64 = req.file.buffer.toString("base64");
-    const imageUrl = `data:${req.file.mimetype};base64,${imageBase64}`;
+    const base64 = req.file.buffer.toString("base64");
+    const mime = req.file.mimetype || "image/jpeg";
+    const dataUri = `data:${mime};base64,${base64}`;
 
     const newItem = await Portfolio.create({
       title,
-      imageUrl,
       description,
       user: userId,
+      imageUrl: dataUri,
+      imageBase64: dataUri,
+      imageMimeType: mime,
     });
 
-    res.status(201).json(newItem);
+    res.status(201).json({ newItem });
   } catch (error) {
     console.error("Erro ao criar item de portfólio:", error);
-    res
-      .status(500)
-      .json({ message: "Erro ao criar item de portfólio", error: error.message });
+    if (error.name === "ValidationError" || error.name === "CastError") {
+      return res.status(400).json({ message: "Dados inválidos", error: error.message });
+    }
+    res.status(500).json({ message: "Erro ao criar item de portfólio", error: error.message });
   }
 };
 
 export const getAllPortfolioItems = async (req, res) => {
   try {
-    const items = await Portfolio.find({ user: req.user.id }).sort({ createdAt: -1 });
-    res.status(200).json(items);
+    const items = await Portfolio.find().sort({ createdAt: -1 });
+
+    const result = items.map((it) => ({
+      _id: it._id,
+      title: it.title,
+      description: it.description,
+      imageUrl: `${process.env.BASE_URL || ""}/api/portfolio/${it._id}/image`,
+      createdAt: it.createdAt,
+    }));
+    res.json(result);
   } catch (error) {
-    console.error("Erro ao buscar portfólio:", error);
-    res.status(500).json({ message: "Erro ao buscar portfólio" });
+    res.status(500).json({ message: "Erro ao buscar portfólio", error: error.message });
+  }
+};
+
+export const getPortfolioImage = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const item = await Portfolio.findById(id);
+    if (!item) return res.status(404).json({ message: "Imagem não encontrada" });
+
+    let base64 = item.imageBase64 || item.imageData || item.imageUrl;
+    if (!base64 && item.imagePath) {
+      return res.sendFile(item.imagePath, { root: process.cwd() });
+    }
+
+    const matches = base64 && base64.match(/^data:(.+);base64,(.+)$/);
+    let mime = "image/jpeg";
+    let dataBase64 = base64;
+    if (matches) {
+      mime = matches[1];
+      dataBase64 = matches[2];
+    }
+
+    const imgBuffer = Buffer.from(dataBase64, "base64");
+    res.set("Content-Type", mime);
+    res.send(imgBuffer);
+  } catch (err) {
+    res.status(500).json({ message: "Erro ao obter imagem", error: err.message });
   }
 };
 
