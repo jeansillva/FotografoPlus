@@ -2,23 +2,31 @@ import Schedule from "../models/Schedule.js";
 
 export const createSchedule = async (req, res) => {
   try {
-    const { date, title, description } = req.body;
-
-    if (!date || !title) {
-      return res.status(400).json({ message: "Data e título são obrigatórios" });
+    const { title, date, description } = req.body;
+    const userId = req.user?.id;
+    
+    if (!title || !date) {
+      return res.status(400).json({ message: "Título e data são obrigatórios" });
     }
 
-    const newSchedule = new Schedule({
-      date,
+    const parsed = new Date(date);
+    if (isNaN(parsed.getTime())) {
+      return res.status(400).json({ message: "Formato de data inválido" });
+    }
+
+    const newSchedule = await Schedule.create({
       title,
+      date: parsed.toISOString(),
       description,
-      user: req.user.id, 
+      user: userId,
     });
 
-    await newSchedule.save();
     res.status(201).json({ message: "Agendamento criado com sucesso", newSchedule });
   } catch (error) {
     console.error("Erro ao criar agendamento:", error);
+    if (error.name === "ValidationError" || error.name === "CastError") {
+      return res.status(400).json({ message: "Dados inválidos", error: error.message });
+    }
     res.status(500).json({ message: "Erro interno ao criar agendamento" });
   }
 };
