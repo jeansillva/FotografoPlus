@@ -32,32 +32,55 @@ export default function Schedule() {
     fetchSchedules();
   }, [token]);
 
-  const handleSave = async () => {
-    if (!novoAgendamento.date || !novoAgendamento.title) return;
+  const isValidDate = (d) => {
+    if (!d) return false;
+    const parsed = new Date(d);
+    return !isNaN(parsed.getTime());
+  };
 
+  const handleSave = async () => {
+    setMensagem("");
+    if (!novoAgendamento.title || !novoAgendamento.date) {
+      setMensagem("Título e data são obrigatórios.");
+      return;
+    }
+
+    if (!isValidDate(novoAgendamento.date)) {
+      setMensagem("Formato de data inválido.");
+      return;
+    }
+
+    setLoading(true);
     try {
       if (editando) {
+        const payload = { ...novoAgendamento, date: new Date(novoAgendamento.date).toISOString() };
         const res = await axios.put(
           `${API_URL}/api/schedules/${editando._id}`,
-          novoAgendamento,
+          payload,
           { headers: { Authorization: `Bearer ${token}` } }
         );
+        const updated = res.data.updated ?? res.data;
         setAgendamentos((prev) =>
-          prev.map((item) => (item._id === editando._id ? res.data.updated : item))
+          prev.map((item) => (item._id === editando._id ? updated : item))
         );
       } else {
-        const res = await axios.post(`${API_URL}/api/schedules`, novoAgendamento, {
+        const payload = { ...novoAgendamento, date: new Date(novoAgendamento.date).toISOString() };
+        const res = await axios.post(`${API_URL}/api/schedules`, payload, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setAgendamentos([...agendamentos, res.data.newSchedule]);
+        const created = res.data.newSchedule ?? res.data;
+        setAgendamentos((prev) => [...prev, created]);
       }
 
       setNovoAgendamento({ date: "", title: "", description: "" });
       setEditando(null);
       setModalAberto(false);
     } catch (error) {
+      const serverMsg = error?.response?.data?.message;
+      setMensagem(serverMsg || "Erro ao salvar agendamento.");
       console.error("Erro ao salvar agendamento:", error);
-      setMensagem("Erro ao salvar agendamento.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -70,7 +93,8 @@ export default function Schedule() {
       setAgendamentos((prev) => prev.filter((item) => item._id !== id));
     } catch (error) {
       console.error("Erro ao excluir agendamento:", error);
-      setMensagem("Erro ao excluir agendamento.");
+      const serverMsg = error?.response?.data?.message;
+      setMensagem(serverMsg || "Erro ao excluir agendamento.");
     }
   };
 
@@ -91,6 +115,7 @@ export default function Schedule() {
               setEditando(null);
               setNovoAgendamento({ date: "", title: "", description: "" });
               setModalAberto(true);
+              setMensagem("");
             }}
           >
             + Novo Agendamento
@@ -119,6 +144,7 @@ export default function Schedule() {
                       title: item.title,
                       description: item.description || "",
                     });
+                    setMensagem("");
                     setModalAberto(true);
                   }}
                 >
@@ -170,7 +196,11 @@ export default function Schedule() {
               <button className={styles.cancelButton} onClick={() => setModalAberto(false)}>
                 Cancelar
               </button>
-              <button className={styles.saveButton} onClick={handleSave}>
+              <button
+                className={styles.saveButton}
+                onClick={handleSave}
+                disabled={!novoAgendamento.title || !novoAgendamento.date || loading}
+              >
                 {editando ? "Salvar Alterações" : "Salvar"}
               </button>
             </div>
