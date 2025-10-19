@@ -3,20 +3,46 @@ import { createContext, useState, useEffect } from "react";
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("token"));
+  const getInitialAuth = () => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const qToken = params.get("token");
+      const qName = params.get("name");
+      const qEmail = params.get("email");
+
+      if (qToken) {
+        const userData = { name: decodeURIComponent(qName || ""), email: decodeURIComponent(qEmail || "") };
+        localStorage.setItem("token", qToken);
+        localStorage.setItem("user", JSON.stringify(userData));
+        return { token: qToken, user: userData };
+      }
+    } catch (err) {
+    }
+
+    const storedToken = localStorage.getItem("token");
+    const storedUser = localStorage.getItem("user");
+    return { token: storedToken, user: storedUser ? JSON.parse(storedUser) : null };
+  };
+
+  const initial = getInitialAuth();
+  const [token, setToken] = useState(initial.token);
+  const [user, setUser] = useState(initial.user);
 
   useEffect(() => {
-    if (token) {
-      setUser(JSON.parse(localStorage.getItem("user")));
-    }
-  }, [token]);
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("token")) {
+        const newUrl = window.location.pathname; 
+        window.history.replaceState({}, document.title, newUrl);
+      }
+    } catch (err) {}
+  }, []);
 
   const login = (userData, jwt) => {
-    localStorage.setItem("user", JSON.stringify(userData));
-    localStorage.setItem("token", jwt);
-    setUser(userData);
-    setToken(jwt);
+    if (userData) localStorage.setItem("user", JSON.stringify(userData));
+    if (jwt) localStorage.setItem("token", jwt);
+    setUser(userData || null);
+    setToken(jwt || null);
   };
 
   const logout = () => {

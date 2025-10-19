@@ -41,18 +41,49 @@ export default function Login() {
     }
   };
 
+  const handleGoogleLogin = () => {
+    window.location.href = `${API_URL}/api/auth/google`;
+  };
+
   return (
     <div className={styles.loginPage}>
       <div className={styles.loginBox}>
         <h2>Login</h2>
         {message && <p className={styles.alert}>{message}</p>}
+
         <form onSubmit={handleLogin}>
-          <input name="email" type="email" placeholder="Email" className={styles.input} required />
-          <input name="password" type="password" placeholder="Senha" className={styles.input} required />
-          <button type="submit" className={styles.loginButton} disabled={loading}>
+          <input
+            name="email"
+            type="email"
+            placeholder="Email"
+            className={styles.input}
+            required
+          />
+          <input
+            name="password"
+            type="password"
+            placeholder="Senha"
+            className={styles.input}
+            required
+          />
+          <button
+            type="submit"
+            className={styles.loginButton}
+            disabled={loading}
+          >
             {loading ? <LoadingIndicator /> : "Entrar"}
           </button>
         </form>
+
+        <button onClick={handleGoogleLogin} className={styles.googleButton}>
+          <img
+            src="https://developers.google.com/identity/images/g-logo.png"
+            alt="Google logo"
+            style={{ width: "20px", marginRight: "8px" }}
+          />
+          Entrar com Google
+        </button>
+
         <p style={{ marginTop: "1.5rem", color: "#fff" }}>
           Não tem conta?{" "}
           <Link

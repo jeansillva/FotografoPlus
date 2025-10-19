@@ -18,4 +18,3 @@ describe('Navegação deslogado', () => {
     cy.url().should('include', '/login');
   });
 });
-

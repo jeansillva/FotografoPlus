@@ -4,17 +4,38 @@ import { AuthContext } from "../context/AuthContext";
 import styles from "./Portfolio.module.css";
 import LoadingIndicator from "../components/LoadingIndicator";
 
-const API_URL = import.meta.env.VITE_API_URL
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function Portfolio() {
-  const { token } = useContext(AuthContext);
+  const { token, login, user } = useContext(AuthContext);
   const [fotos, setFotos] = useState([]);
   const [fotoSelecionada, setFotoSelecionada] = useState(null);
   const [loading, setLoading] = useState(true);
   const [mensagem, setMensagem] = useState("");
 
   useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const googleToken = urlParams.get("token");
+
+    if (googleToken) {
+      localStorage.setItem("token", googleToken);
+      login(null, googleToken);
+      window.history.replaceState({}, document.title, "/portfolio");
+    }
+  }, [login]);
+
+  useEffect(() => {
+    if (!token) {
+      const timer = setTimeout(() => {
+        window.location.href = "/login";
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [token]);
+
+  useEffect(() => {
     const fetchFotos = async () => {
+      if (!token) return;
       try {
         const res = await axios.get(`${API_URL}/api/portfolio`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -58,7 +79,6 @@ export default function Portfolio() {
       await axios.put(`${API_URL}/api/portfolio/${id}`, dataAtualizada, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
       setFotos((prev) =>
         prev.map((foto) => (foto._id === id ? { ...foto, ...dataAtualizada } : foto))
       );
@@ -70,7 +90,6 @@ export default function Portfolio() {
 
   const handleDeletePhoto = async (id) => {
     if (!window.confirm("Tem certeza que deseja excluir esta foto?")) return;
-
     try {
       await axios.delete(`${API_URL}/api/portfolio/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -83,17 +102,20 @@ export default function Portfolio() {
     }
   };
 
-  if (loading) return (
-    <div className={styles.portfolioPage}>
-      <LoadingIndicator size="large" />
-    </div>
-  );
+  if (loading)
+    return (
+      <div className={styles.portfolioPage}>
+        <LoadingIndicator size="large" />
+      </div>
+    );
 
   return (
     <div className={styles.portfolioPage}>
       <div className={styles.portfolioContainer}>
         <div className="d-flex justify-content-between align-items-center mb-4">
-          <h2 className="fw-bold">Meu Portfólio</h2>
+          <h2 className="fw-bold">
+            {user?.name ? `Portfólio de ${user.name}` : "Meu Portfólio"}
+          </h2>
           <label className="btn btn-warning fw-bold mb-0">
             + Adicionar Foto
             <input type="file" accept="image/*" hidden onChange={handleAddPhoto} />
@@ -109,7 +131,11 @@ export default function Portfolio() {
                 className={`${styles.card} card shadow-sm`}
                 onClick={() => setFotoSelecionada(foto)}
               >
-                <img src={foto.imageUrl} className={`${styles.cardImg} card-img-top`} alt="Foto" />
+                <img
+                  src={foto.imageUrl}
+                  className={`${styles.cardImg} card-img-top`}
+                  alt="Foto"
+                />
                 <div className="card-body text-center">
                   <p className="fw-bold mb-0">{foto.title}</p>
                   <p className="card-text text-muted">{foto.description}</p>

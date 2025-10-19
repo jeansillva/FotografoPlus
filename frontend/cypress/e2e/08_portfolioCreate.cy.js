@@ -22,5 +22,3 @@ describe('Upload de imagem no portfólio', () => {
     cy.get('#root input[type="file"]').attachFile(fileName);
   });
 });
-
-

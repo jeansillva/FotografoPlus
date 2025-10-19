@@ -16,4 +16,3 @@ describe('Exclusão de agendamento', () => {
     cy.get('#root button._deleteButton_1yadu_177').should('not.exist');
   });
 });
-
