@@ -56,47 +56,49 @@ Infraestrutura:
 
 ##  Arquitetura e tecnologias
 
-FotografoPlus/  
-├── backend/ # Node.js + Express + MongoDB  
-│ ├── src/  
-│ │ ├── config/  
-│ │ ├── controllers/  
-│ │ ├── middlewares/  
-│ │ ├── models/  
-│ │ ├── routes/
-│ │ └── tests/ 
-│ │ ├── app.js
-│ │ ├── server.js
-│ ├── .env 
-│ ├── .gitignore
-│ ├── jest.config.cjs
-│ └── package.json  
-│  
-├── frontend/ # React + Vite  
-│ ├── src/ 
-│ │ ├── assets/ 
-│ │ ├── components/
-│ │ ├── context/
-│ │ ├── hooks/
-│ │ ├── pages/
-│ │ ├── routes/
-│ │ ├── services/ 
-│ │ ├── styles/
-│ │ ├── App.css
-│ │ ├── App.jsx
-│ │ ├── index.css
-│ │ └── main.jsx
-│ ├── .env 
-│ ├── .gitignore
-│ ├── cypress.config.js
-│ ├── index.html
-│ ├── package.json
-│ ├── vercel.json 
-│ └── vite.config.js  
+```tree
+FotografoPlus/
+├── backend/ # Node.js + Express + MongoDB
+│   ├── src/
+│   │   ├── config/
+│   │   ├── controllers/
+│   │   ├── middlewares/
+│   │   ├── models/
+│   │   ├── routes/
+│   │   ├── tests/
+│   │   ├── app.js
+│   │   └── server.js
+│   ├── .env
+│   ├── .gitignore
+│   ├── jest.config.cjs
+│   └── package.json
 │
-└── .github/workflows/  
-├── ci.yml # CI/CD pipeline com Vercel + Render (o Render não é mais usado no projeto, está presente apenas para mostrar que ja foi utilizado anteriormente e que também é possivel utiliza-lo) 
-└── main_fotografoplus.yml # Deploy backend na Azure
+├── frontend/ # React + Vite
+│   ├── src/
+│   │   ├── assets/
+│   │   ├── components/
+│   │   ├── context/
+│   │   ├── hooks/
+│   │   ├── pages/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   ├── styles/
+│   │   ├── App.css
+│   │   ├── App.jsx
+│   │   ├── index.css
+│   │   └── main.jsx
+│   ├── .env
+│   ├── .gitignore
+│   ├── cypress.config.js
+│   ├── index.html
+│   ├── package.json
+│   ├── vercel.json
+│   └── vite.config.js
+│
+└── .github/workflows/
+    ├── ci.yml # CI/CD pipeline com Vercel + Render (o Render não é mais usado no projeto, está presente apenas para mostrar que ja foi utilizado anteriormente e que também é possível utiliza-lo)
+    └── main_fotografoplus.yml # Deploy backend na Azure
+   ```
 
 ### 💡 Evolução e Status
 
