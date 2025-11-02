@@ -43,7 +43,8 @@ describe('Atualização de credenciais do usuário', () => {
     cy.get('#root [name="currentPassword"]').type(user.password);
     cy.get('#root [name="newPassword"]').type(newPassword);
     cy.get('#root [name="repeatPassword"]').type(newPassword);
-    cy.get('#root div._loginPage_t7fxq_5').click();
+    // cy.get('#root div._loginPage_t7fxq_5').click();
+    cy.get('#root button[type="submit"]').click();
     cy.get('#root button[type="submit"]').click();
 
     cy.contains('Credenciais atualizadas com sucesso!', { timeout: 10000 })

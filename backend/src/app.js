@@ -6,6 +6,7 @@ import passport from "passport";
 import authRoutes from "./routes/authRoutes.js";
 import scheduleRoutes from "./routes/scheduleRoutes.js";
 import portfolioRoutes from "./routes/portfolioRoutes.js";
+import albumRoutes from "./routes/albumRoutes.js";
 
 import { authMiddleware } from "./middlewares/authMiddleware.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
@@ -25,6 +26,7 @@ app.use("/api/auth", authRoutes);
 
 app.use("/api/schedules", authMiddleware, scheduleRoutes);
 app.use("/api/portfolio", authMiddleware, portfolioRoutes);
+app.use("/api/albums", authMiddleware, albumRoutes);
 
 app.get("/", (req, res) => {
   res.send("API rodando");

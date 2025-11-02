@@ -22,6 +22,5 @@ describe('Edição de agendamento', () => {
     cy.get('#root div._modalBox_1yadu_229').click();
 
     cy.get('#root button._saveButton_1yadu_351').click();
-
   });
 });

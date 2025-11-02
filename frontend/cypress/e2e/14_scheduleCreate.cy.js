@@ -22,13 +22,6 @@ describe('Agendamento de sessão no portfólio', () => {
     cy.get('#root textarea').clear();
     cy.get('#root textarea').type('Dia Especial');
     cy.get('#root button._saveButton_1yadu_351').click();
+    cy.wait(1500);
   });
-});
-
-it('schedule2', function() {
-  cy.visit('http://localhost:5173/schedule')
-});
-
-it('updateSchedule', function() {
-  cy.visit('http://localhost:5173/schedule')
 });

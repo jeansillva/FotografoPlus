@@ -20,5 +20,6 @@ describe('Upload de imagem no portfólio', () => {
     // Seleciona o input e faz o upload da imagem
     const fileName = 'foto_teste.jpg'; 
     cy.get('#root input[type="file"]').attachFile(fileName);
+    cy.wait(3000);
   });
 });

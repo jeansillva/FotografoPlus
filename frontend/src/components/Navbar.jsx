@@ -92,6 +92,11 @@ export default function Navbar() {
             ) : (
               <>
                 <li className="nav-item">
+                  <Link className={`nav-link ${styles.navLink}`} to="/albums" onClick={handleLinkClick}>
+                    Álbuns
+                  </Link>
+                </li>
+                <li className="nav-item">
                   <Link
                     className={`nav-link ${styles.navLink}`}
                     to="/update-credentials"

@@ -7,6 +7,7 @@ import Schedule from "./pages/Schedule";
 import Register from "./pages/Register";
 import UpdateCredentials from "./pages/UpdateCredentials";
 import PrivateRoute from "./routes/PrivateRoute";
+import Albums from "./pages/Albums";
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
             </PrivateRoute>
           }
         />
+        <Route path="/albums" element={<PrivateRoute><Albums /></PrivateRoute>} />
       </Routes>
     </>
   );
