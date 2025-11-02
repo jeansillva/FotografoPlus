@@ -4,6 +4,8 @@ import { authMiddleware } from "../middlewares/authMiddleware.js";
 import { errorHandler } from "../middlewares/errorHandler.js";
 import jwt from "jsonwebtoken";
 
+process.env.JWT_SECRET = process.env.JWT_SECRET || "testsecret";
+
 // asyncHandler
 describe("asyncHandler", () => {
   it("deve chamar next com erro se a função lançar", async () => {

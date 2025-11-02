@@ -10,6 +10,7 @@ let mongoServer;
 let token;
 let userId;
 let createdItemId;
+process.env.JWT_SECRET = process.env.JWT_SECRET || "testsecret";
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
