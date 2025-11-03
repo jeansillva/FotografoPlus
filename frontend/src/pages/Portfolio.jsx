@@ -3,6 +3,7 @@ import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import styles from "./Portfolio.module.css";
 import LoadingIndicator from "../components/LoadingIndicator";
+import TFImageCaption from "../components/TFImageCaption";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -166,9 +167,9 @@ export default function Portfolio() {
                 onChange={(e) =>
                   setFotoSelecionada({ ...fotoSelecionada, title: e.target.value })
                 }
-                onBlur={() =>
+                onBlur={(e) =>
                   handleUpdateField(fotoSelecionada._id, {
-                    title: fotoSelecionada.title,
+                    title: e.target.value,
                   })
                 }
               />
@@ -186,12 +187,25 @@ export default function Portfolio() {
                     description: e.target.value,
                   })
                 }
-                onBlur={() =>
+                onBlur={(e) =>
                   handleUpdateField(fotoSelecionada._id, {
-                    description: fotoSelecionada.description,
+                    description: e.target.value,
                   })
                 }
               ></textarea>
+
+              <div className="mt-2">
+                <TFImageCaption
+                  imageUrl={fotoSelecionada.imageUrl}
+                  onGenerated={(out) =>
+                    setFotoSelecionada((prev) => ({
+                      ...prev,
+                      title: out.title,
+                      description: out.description,
+                    }))
+                  }
+                />
+              </div>
             </div>
 
             <div className={styles.modalActions}>
@@ -203,7 +217,14 @@ export default function Portfolio() {
               </button>
               <button
                 className="btn btn-warning fw-bold text-dark"
-                onClick={() => setFotoSelecionada(null)}
+                onClick={async () => {
+                  
+                  await handleUpdateField(fotoSelecionada._id, {
+                    title: fotoSelecionada.title,
+                    description: fotoSelecionada.description,
+                  });
+                  setFotoSelecionada(null);
+                }}
               >
                 Fechar e Salvar
               </button>
