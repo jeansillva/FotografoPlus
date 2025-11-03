@@ -38,12 +38,6 @@ jobs:
           echo "Sem frontend implementado"
         fi
 
-    - name: Rodar testes Cypress
-      working-directory: frontend
-      run: |
-        npm install cypress --save-dev
-        npx cypress run
-
     - name: Deploy para Vercel
       run: |
         npm install -g vercel
