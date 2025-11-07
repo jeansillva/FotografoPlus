@@ -10,10 +10,6 @@ module.exports = {
     "!src/app.js",
     "!src/config/db.js",
     "!src/config/googleAuth.js",
-    "!src/routes/authRoutes.js",
-    "!src/controllers/albumController.js",
-    "!src/models/Album.js",
-    "!src/routes/albumRoutes.js"
   ],
   coverageDirectory: "<rootDir>/coverage",
   coverageThreshold: {

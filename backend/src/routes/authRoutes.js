@@ -12,6 +12,7 @@ router.get(
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
+/* istanbul ignore if */
 router.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: "/login", session: false }),
@@ -38,6 +39,7 @@ router.patch("/update-password", authMiddleware, updateUserCredentials);
 router.delete("/users/:id", authMiddleware, deleteUserById);
 
 // (APENAS dev/test)
+/* istanbul ignore if */
 if (process.env.NODE_ENV !== "production") {
   router.delete("/test/users", async (req, res) => {
     try {
