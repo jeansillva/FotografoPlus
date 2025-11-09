@@ -1,9 +1,10 @@
 # 📸 Fotógrafo+
-Projeto avaliativo desenvolvido para a disciplina de PROJETOS INTEGRADOS DE APLICAÇÕES da Pós Graduação em Desenvolvimento Web Full Stack na PUC MINAS.
-Fotógrafo+ é Plataforma digital desenvolvida para fotógrafos profissionais e amadores, permitindo gerenciar portfólios, agenda de ensaios e credenciais de acesso de forma simples, moderna e integrada à nuvem.
+
+Fotógrafo+ é uma plataforma moderna para gerenciamento de portfólios e agendamentos fotográficos, integrando IA e autenticação segura.
+
+Projeto avaliativo desenvolvido para a disciplina de PROJETOS INTEGRADOS DE APLICAÇÕES da Pós Graduação em Desenvolvimento Web Full Stack na PUC MINAS
 
 ---
-
 ## Sumário
 - [Sobre o projeto](#sobre-o-projeto)
 - [Principais funcionalidades](#principais-funcionalidades)
@@ -26,11 +27,13 @@ Fotógrafo+ é Plataforma digital desenvolvida para fotógrafos profissionais e 
 ## Sobre o projeto
 O Fotógrafo+ centraliza em uma única plataforma o gerenciamento de atividades fotográficas, permitindo:
 
-- Criar e exibir portfólios com imagens enviadas pelo usuário autenticado;
+- Criar e exibir **Portfólios organizados em Álbuns** com imagens enviadas pelo usuário autenticado;
 - Gerenciar agendamentos com data, título e descrição;
 - **Autenticar via JWT** ou com **Google OAuth 2.0**;
 - **Alterar credenciais** (senha e dados do usuário) diretamente pela aplicação;
+- Integrar **Inteligência Artificial** (TensorFlow.js) para gerar metadados de imagens;
 - Consumir API hospedada na **Azure Web App**, com frontend publicado na **Vercel**.
+- Gerar título e legendas com IA (TensorFlow) para as fotos que forem subidas no porfólio
 
 ---
 
@@ -42,16 +45,21 @@ Autenticação e autorização:
 - Alteração de senha com persistência segura no banco  
 
 Entidades e CRUDs:
-- **Portfólio** — upload, visualização, edição e exclusão de imagens  
+-  **Portfólio**  — upload, visualização, edição e exclusão de imagens
+- **(Álbuns e Fotos)** — Implementação **mestre-detalhe** para organização em álbuns que contêm várias fotos, permitindo gestão de álbuns e fotos separadamente.
 - **Agenda** — criação, listagem, atualização e exclusão de compromissos (vinculados ao usuário logado)
+- **Usuário** - criação e edição de credenciais de usuários.
 
 Infraestrutura:
 - Banco de dados **MongoDB Atlas**  
 - Deploy backend em **Azure Web App**  
 - Deploy frontend em **Vercel**  
 - CI/CD com **GitHub Actions**  
+- **Tratamento de Logs** completo e robusto.
+- **Testes automatizados no backend (Jest, CONCLUÍDO)**
 - Suporte a testes end-to-end no frontend (**Cypress**) 
-- Testes automatizados no backend (**Jest, EM DESENVOLVIMENTO**)  
+- **Inteligência Artificial (TensorFlow.js)** rodando no cliente para análise de imagens e geração automática de título e descrição.
+
 ---
 
 ##  Arquitetura e tecnologias
@@ -98,32 +106,21 @@ FotografoPlus/
 └── .github/workflows/
     ├── ci.yml # CI/CD pipeline com Vercel + Render (o Render não é mais usado no projeto, está presente apenas para mostrar que ja foi utilizado anteriormente e que também é possível utiliza-lo)
     └── main_fotografoplus.yml # Deploy backend na Azure
-   ```
-
-### 💡 Evolução e Status
-
-| Requisito | Status | Detalhes |
-| :--- | :--- | :--- |
-| **Tratamento de Logs** | Parcial | Logs básicos via `console.log/error`. Pronta para expansão com Winston/Morgan. |
-| **Testes Automatizados** | Parcial | Cobertura de ~70% no backend (Jest, **ainda não commitado**) e testes e2e iniciais no frontend (Cypress). |
-| **Funcionalidade Adicional** | Em Planejamento | Estrutura modular preparada para integração de serviços de IA (análise de imagens). |
-
----
-## ☁️ Deploy e CI/CD
+  ```
+    
+## Deploy e CI/CD
 - **Frontend:**  
   📍 [https://fotografo-plus.vercel.app](https://fotografo-plus.vercel.app)
 
 - **Backend (Azure Web App):**  
   📍 [https://fotografoplus-cuaxeebdhugherfa.canadacentral-01.azurewebsites.net](https://fotografoplus-cuaxeebdhugherfa.canadacentral-01.azurewebsites.net)
-
+  
 - **CI/CD:**  
   - GitHub Actions compila e executa testes a cada push na branch `main`.  
   - O frontend é publicado automaticamente na **Vercel**.  
   - O backend é publicado automaticamente na **Azure**, com build e upload configurados no workflow `main_fotografoplus.yml`.
 
----
-
-## 🧩 Pré-requisitos
+## Pré-requisitos
 
 - **Node.js ≥ 18**
 - **npm ≥ 9**
@@ -133,8 +130,6 @@ FotografoPlus/
 Você também consegue se registrar com um email e senhas fakes para testar a aplicação!
 
 ---
-
-## 🔐 Variáveis de ambiente
 
 ### 🔹 Backend (`backend/.env`)
 ```
@@ -152,13 +147,15 @@ GOOGLE_CALLBACK_URL=http://localhost:3000/api/auth/google/callback ou https://fo
 
 FRONTEND_URL=https://fotografo-plus.vercel.app
 ```
+
 ### 🔹 Frontend (`frontend/.env`)
 ```
 VITE_API_URL=https://fotografoplus-cuaxeebdhugherfa.canadacentral-01.azurewebsites.net
 ```
+
 Servidor local: **[http://localhost:3000](http://localhost:3000)**
 
-🚀 Instalação e execução local
+## Instalação e execução local:
 
 🖥️ Backend
 ```
@@ -172,26 +169,28 @@ cd frontend
 npm install
 npm run dev
 ```
-Aplicação local: **[http://localhost:5173](http://localhost:5173)**
 
-## 🧪 Testes automatizados
+##  Testes automatizados
 
-🔹 Frontend — Cypress
+Para executar os testes do projeto:
+
+### 🖥️ Backend
+```bash
+cd backend
+npm run test
 ```
+**Local dos testes:** `backend/src/tests/`
+
+### 💻 Frontend — Cypress
+```bash
 cd frontend
 npx cypress open
-#ou modo headless:
-npx cypress run
 ```
--   Local dos testes: `frontend/cypress/e2e/`
-    
--   Simula navegação, login e operações CRUD no navegador.
-## 🔑 Autenticação OAuth Google
+**Local dos testes:** `frontend/cypress/e2e/`
 
 O projeto suporta **autenticação via Google**, além do login tradicional.
 
 ### 🔸 Fluxo:
-
 1.  O usuário clica em “Login com Google”.
 2.  É redirecionado à tela de consentimento Google.
 3.  Após o login, a API (backend) recebe o `code` e gera um token JWT.
@@ -204,7 +203,7 @@ O projeto suporta **autenticação via Google**, além do login tradicional.
 ### 🔸 Callback
 `https://fotografoplus-cuaxeebdhugherfa.canadacentral-01.azurewebsites.net/api/auth/google/callback`
 
-##  Rotas principais da API
+## Rotas principais da API
 
 ## Autenticação
 
@@ -215,6 +214,16 @@ O projeto suporta **autenticação via Google**, além do login tradicional.
 | GET | `/api/auth/google` | Inicia OAuth |
 | GET | `/api/auth/google/callback` | Callback do OAuth |
 | PATCH | `/api/auth/update-password` | Altera senha do usuário autenticado |
+
+ATENÇÃO: O primeiro acesso na aplicação pode levar alguns segundos por se tratar de planos gratuitos das plataformas em nuvens utilizadas.
+
+Para facilitar a avaliação, o sistema permite registrar contas com e‑mails fictícios (não é necessário usar um e‑mail real) e o login com Google também permite acesso á aplicação.  
+
+Caso necessite de um usuário pré cadastrado utilize as credenciais abaixo:
+```
+Email: jean.teste@fotografo.com  
+Senha: Foto@@
+```
 
 ## Portfólio
 
@@ -234,15 +243,19 @@ O projeto suporta **autenticação via Google**, além do login tradicional.
 | PUT | `/api/schedules/:id` | Atualiza |
 | DELETE | `/api/schedules/:id` | Exclui |
 
-## Dicas de debug
+## Álbum
 
--   **Erro 401:** token ausente ou expirado. Faça login novamente.
-    
--   **Erro CORS:** verifique `FRONTEND_URL` e `CORS` configurados no backend.
-    
--   **Erro 404 em imagens:** a API gera `imageUrl` dinâmico — verifique o campo `BASE_URL` no backend.
-    
--   **Testes falhando:** confirme variáveis `MONGO_URI_TEST` e isolamento de banco.
+| Método | Rota | Descrição |
+| :--- | :--- | :--- |
+| **Álbuns (Mestre)** | | |
+| POST | `/api/portfolio` | Cria novo Álbum e realiza upload de múltiplas fotos |
+| GET | `/api/portfolio` | Lista todos os Álbuns do usuário |
+| PUT | `/api/portfolio/:id` | Atualiza título/descrição do Álbum |
+| DELETE | `/api/portfolio/:id` | Exclui o Álbum e todas as Fotos associadas |
+| **Fotos (Detalhe)** | | |
+| POST | `/api/portfolio/:id/photos` | Adiciona uma nova Foto ao Álbum especificado por id |
+| PUT | `/api/portfolio/:albumId/photos/:photoId` | Atualiza título/descrição de uma Foto específica |
+| DELETE | `/api/portfolio/:albumId/photos/:photoId` | Exclui uma Foto específica de um Álbum |
 
 ## 📜 Licença
 Projeto acadêmico. Uso livre para fins de estudo e portfólio.
